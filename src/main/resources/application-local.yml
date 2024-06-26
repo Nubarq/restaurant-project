@@ -1,0 +1,30 @@
+server:
+  port: 8080
+
+logging:
+  level:
+    root: info
+
+spring:
+  datasource:
+    driver-class-name: com.mysql.cj.jdbc.Driver
+    url: jdbc:mysql://localhost:3306/deliveryapplication
+    username: root
+    password: 12345
+  jpa:
+    hibernate:
+      ddl-auto: update
+
+    database: mysql
+
+
+
+url:
+  ignore:
+    swagger: /v2/api-docs, /webjars/*, /swagger-resources/, /actuator/health, /swagger-ui/index.html, /swagger-ui.html, /app//.{js,html}
+
+
+
+springdoc:
+  swagger-ui:
+    path: /swagger
