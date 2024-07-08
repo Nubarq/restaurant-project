@@ -5,6 +5,7 @@ import com.alas.ms_admin.dto.product.request.CreateProductRequestDto;
 import com.alas.ms_admin.dto.product.request.UpdateProductRequestDto;
 import com.alas.ms_admin.dto.product.response.CreateProductResponseDto;
 import com.alas.ms_admin.dto.product.response.UpdateProductResponseDto;
+import com.alas.ms_admin.exeption.CustomException;
 import com.alas.ms_admin.mapper.menu.MenuMapper;
 import com.alas.ms_admin.mapper.product.ProductMapper;
 import com.alas.ms_admin.model.branch.Branch;
@@ -31,7 +32,8 @@ public class ProductServiceImpl implements ProductService {
     private final IngredientRepository ingredientRepository;
 
     @Override
-    public CreateProductResponseDto createProduct( List<Integer> ingredientIds,CreateProductRequestDto createProductRequestDto) {
+    public CreateProductResponseDto createProduct( List<Integer> ingredientIds,
+                                                   CreateProductRequestDto createProductRequestDto) {
         Product product=new Product();
         List<Ingredient> ingredients =ingredientRepository.findAllById(ingredientIds);
         product.setIngredients(ingredients);
@@ -41,9 +43,10 @@ public class ProductServiceImpl implements ProductService {
     }
 
     @Override
-    public UpdateProductResponseDto updateProduct(List<Integer> ingredientIds,UpdateProductRequestDto updateProductRequestDto) {
+    public UpdateProductResponseDto updateProduct(List<Integer> ingredientIds,
+                                                  UpdateProductRequestDto updateProductRequestDto) {
         Product product =productRepository.
-                findById(updateProductRequestDto.getId()).orElseThrow(() -> new RuntimeException("not found"));
+                findById(updateProductRequestDto.getId()).orElseThrow(() -> new CustomException("not found"));
         List<Ingredient> ingredients =ingredientRepository.findAllById(ingredientIds);
         product.setIngredients(ingredients);
         product = mapper.mapUpdateProductRequestDtoToEntity(updateProductRequestDto,product);
@@ -53,18 +56,18 @@ public class ProductServiceImpl implements ProductService {
 
     @Override
     public void deleteProduct(Integer id) {
-        Product product=productRepository.findById(id).orElseThrow(() -> new RuntimeException("not found"));
+        Product product=productRepository.findById(id).orElseThrow(() -> new CustomException("not found"));
         if(product.isActive()==true){
             product.setActive(false);
             productRepository.save(product);
         }else {
-            throw new RuntimeException("Branch is not active already");
+            throw new CustomException("Branch is not active already");
         }
     }
 
     @Override
     public CreateProductResponseDto findProductById(Integer id) {
-        Product product=productRepository.findById(id).orElseThrow(() -> new RuntimeException("not found"));
+        Product product=productRepository.findById(id).orElseThrow(() -> new CustomException("not found"));
         return mapper.mapEntityToCreateProductResponsetDto(product);
     }
 

@@ -4,6 +4,7 @@ import com.alas.ms_admin.dto.restaurant.request.CreateRestaurantRequestDto;
 import com.alas.ms_admin.dto.restaurant.request.UpdateRestaurantRequestDto;
 import com.alas.ms_admin.dto.restaurant.response.CreateRestaurantResponseDto;
 import com.alas.ms_admin.dto.restaurant.response.UpdateRestaurantResponseDto;
+import com.alas.ms_admin.exeption.CustomException;
 import com.alas.ms_admin.mapper.restaurant.RestaurantMapper;
 import com.alas.ms_admin.model.restaurant.Restaurant;
 import com.alas.ms_admin.repository.restaurant.RestaurantRepository;
@@ -37,7 +38,7 @@ public class RestaurantServiceImpl implements RestaurantService {
 
     @Override
     public CreateRestaurantResponseDto findRestaurantById(Integer id) {
-        Restaurant restaurant = restaurantRepository.findById(id).orElseThrow(() -> new RuntimeException("not found"));
+        Restaurant restaurant = restaurantRepository.findById(id).orElseThrow(() -> new CustomException("not found"));
         return mapper.mapEntityToCreateRestauranResponsetDto(restaurant);
     }
 
@@ -45,18 +46,19 @@ public class RestaurantServiceImpl implements RestaurantService {
     public List<CreateRestaurantResponseDto> findAllRestaurants() {
         List<Restaurant> restaurants = restaurantRepository.findAll();
         return restaurants.stream()
-                .map(restaurant -> mapper.mapEntityToCreateRestauranResponsetDto(restaurant)).collect(Collectors.toList());
+                .map(restaurant -> mapper.mapEntityToCreateRestauranResponsetDto(restaurant)).
+                collect(Collectors.toList());
     }
 
     @Override
     public void deleteRestaurant(Integer id) {
         Restaurant restaurant = restaurantRepository.findById(id)
-                .orElseThrow(() -> new RuntimeException("not found"));
+                .orElseThrow(() -> new CustomException("not found"));
         if (restaurant.isActive()) {
             restaurant.setActive(false);
             restaurantRepository.save(restaurant);
         } else {
-            throw new RuntimeException("Restaurant is not active already");
+            throw new CustomException("Restaurant is not active already");
         }
     }
 
@@ -64,7 +66,7 @@ public class RestaurantServiceImpl implements RestaurantService {
     public UpdateRestaurantResponseDto updateRestaurant( UpdateRestaurantRequestDto updateRestaurantRequestDto) {
 
         Restaurant restaurant = restaurantRepository.findById(updateRestaurantRequestDto.getId())
-                .orElseThrow(() -> new RuntimeException("not found"));
+                .orElseThrow(() -> new CustomException("not found"));
         log.info("Restaurant success find by id" +restaurant);
         restaurant = mapper.mapUpdateRestaurantRequestDtoToEntity(updateRestaurantRequestDto,restaurant);
         log.info("Restaurant success update by id");

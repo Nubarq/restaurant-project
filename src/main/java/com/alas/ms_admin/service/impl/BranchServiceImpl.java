@@ -2,6 +2,7 @@ package com.alas.ms_admin.service.impl;
 
 import com.alas.ms_admin.dto.branch.request.CreateBranchRequestDto;
 import com.alas.ms_admin.dto.branch.request.UpdateBranchRequestDto;
+import com.alas.ms_admin.exeption.CustomException;
 import com.alas.ms_admin.mapper.branch.BranchMapper;
 import com.alas.ms_admin.model.branch.Branch;
 import com.alas.ms_admin.model.restaurant.Restaurant;
@@ -26,7 +27,7 @@ public class BranchServiceImpl implements BranchService {
         Branch branch = mapper.mapCreateBranchRequestDtoToEntity(createBranchRequestDto);
         Integer restaurantId = createBranchRequestDto.getRestaurantId();
         Restaurant restaurant = restaurantRepository.findById(restaurantId)
-                .orElseThrow(() -> new RuntimeException(""));
+                .orElseThrow(() -> new CustomException("The restaurant it belongs to is not available"));
         branch.setRestaurant(restaurant);
         mapper.mapEntityToCreateBranchResponsetDto(branchRepository.save(branch));
         return restaurant;
@@ -35,10 +36,10 @@ public class BranchServiceImpl implements BranchService {
     @Override
     public Restaurant updateBranch(Integer id, UpdateBranchRequestDto updateBranchRequestDto) {
         Branch branch = branchRepository.findById(id)
-                .orElseThrow(() -> new RuntimeException("not found"));
+                .orElseThrow(() -> new CustomException("not found"));
         branch = mapper.mapUpdateBranchRequestDtoToEntity(updateBranchRequestDto,branch);
         Restaurant restaurant = restaurantRepository.findById(updateBranchRequestDto.getRestaurantId())
-                .orElseThrow();
+                .orElseThrow(() -> new CustomException("not found"));
         branch.setRestaurant(restaurant);
         branchRepository.save(branch);
         return restaurant;
@@ -46,26 +47,26 @@ public class BranchServiceImpl implements BranchService {
 
     @Override
     public void deleteBranch(Integer id) {
-        Branch branch = branchRepository.findById(id).orElseThrow(() -> new RuntimeException("not found"));
+        Branch branch = branchRepository.findById(id).orElseThrow(() -> new CustomException("not found"));
         if (branch.isActive() == true) {
             branch.setActive(false);
             branchRepository.save(branch);
         } else {
-            throw new RuntimeException("Branch is not active already");
+            throw new CustomException("Branch is not active already");
         }
     }
 
     @Override
     public Restaurant findBranchById(Integer id) {
-        Branch branch = branchRepository.findById(id).orElseThrow(() -> new RuntimeException("not found"));
+        Branch branch = branchRepository.findById(id).orElseThrow(() -> new CustomException("not found"));
         if (branch.isActive()== true) {
             Integer restaurantId = branch.getRestaurant().getId();
             Restaurant restaurant = restaurantRepository.findById(restaurantId)
-                    .orElseThrow(() -> new RuntimeException("not found"));
+                    .orElseThrow(() -> new CustomException("not found"));
             return restaurant;
         }
         else {
-            throw new RuntimeException("Sorry, Branch Not Found");
+            throw new CustomException("Sorry, Branch Not Found");
 
         }
     }

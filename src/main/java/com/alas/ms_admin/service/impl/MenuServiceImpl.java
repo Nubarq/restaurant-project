@@ -3,6 +3,7 @@ package com.alas.ms_admin.service.impl;
 import com.alas.ms_admin.dto.menu.request.UpdateMenuRequestDto;
 import com.alas.ms_admin.dto.menu.response.CreateMenuResponseDto;
 import com.alas.ms_admin.dto.menu.response.UpdateMenuResponseDto;
+import com.alas.ms_admin.exeption.CustomException;
 import com.alas.ms_admin.mapper.menu.MenuMapper;
 import com.alas.ms_admin.model.branch.Branch;
 import com.alas.ms_admin.model.category.Category;
@@ -40,11 +41,11 @@ public class MenuServiceImpl implements MenuService {
 
     @Override
     public UpdateMenuResponseDto updateMenu(UpdateMenuRequestDto updateMenuRequestDto, List<Integer> categoryId) {
-        Menu menu =menuRepository.findById(updateMenuRequestDto.getId()).orElseThrow(() -> new RuntimeException("not found"));
+        Menu menu =menuRepository.findById(updateMenuRequestDto.getId()).
+                orElseThrow(() -> new CustomException("not found"));
         List<Category> categories =categoryRepository.findAllById(categoryId);
         Branch branch = branchRepository.findById(updateMenuRequestDto.getBranchId()).get();
         menu.setBranch(branch);
-        //menu = mapper.mapUpdateMenuRequestDtoToEntity(updateMenuRequestDto,menu);
         menu.setCategories(categories);
         menu=menuRepository.save(menu);
         return mapper.mapEntityToUpdateMenuResponseDto(menu,new UpdateMenuResponseDto());
@@ -52,18 +53,18 @@ public class MenuServiceImpl implements MenuService {
 
     @Override
     public void deleteMenu(Integer id) {
-        Menu menu=menuRepository.findById(id).orElseThrow(() -> new RuntimeException("not found"));
+        Menu menu=menuRepository.findById(id).orElseThrow(() -> new CustomException("not found"));
         if(menu.isActive()==true){
             menu.setActive(false);
             menuRepository.save(menu);
         }else {
-            throw new RuntimeException("Branch is not active already");
+            throw new CustomException("Branch is not active already");
         }
     }
 
     @Override
     public CreateMenuResponseDto findMenuById(Integer id) {
-        Menu menu=menuRepository.findById(id).orElseThrow(() -> new RuntimeException("not found"));
+        Menu menu=menuRepository.findById(id).orElseThrow(() -> new CustomException("not found"));
         return mapper.mapEntityToCreateMenuResponsetDto(menu);
     }
 

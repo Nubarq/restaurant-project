@@ -6,6 +6,7 @@ import com.alas.ms_admin.dto.Ingredient.response.CreateIngredientResponseDto;
 import com.alas.ms_admin.dto.Ingredient.response.UpdateIngredientResponseDto;
 import com.alas.ms_admin.dto.category.response.CreateCategoryResponseDto;
 import com.alas.ms_admin.dto.category.response.UpdateCategoryResponseDto;
+import com.alas.ms_admin.exeption.CustomException;
 import com.alas.ms_admin.mapper.category.CategoryMapper;
 import com.alas.ms_admin.mapper.ingredient.IngredientMapper;
 import com.alas.ms_admin.model.category.Category;
@@ -28,13 +29,15 @@ public class IngredientServiceImpl implements IngredientService {
     public CreateIngredientResponseDto createIngredient(CreateIngredientRequestDto createIngredientRequestDto) {
         Ingredient ingredient=mapper.mapCreateIngredientRequestDtoToEntity(createIngredientRequestDto);
         Ingredient savedIngredient=ingredientRepository.save(ingredient);
-        CreateIngredientResponseDto ingredientResponseDto=mapper.mapEntityToCreateIngredientResponsetDto(savedIngredient);
+        CreateIngredientResponseDto ingredientResponseDto=mapper.
+                mapEntityToCreateIngredientResponsetDto(savedIngredient);
         return ingredientResponseDto;
     }
 
     @Override
     public UpdateIngredientResponseDto updateIngredient( UpdateIngredientRequestDto updateIngredientRequestDto) {
-        Ingredient ingredient =ingredientRepository.findById(updateIngredientRequestDto.getId()).orElseThrow(() -> new RuntimeException("not found"));
+        Ingredient ingredient =ingredientRepository.findById(updateIngredientRequestDto.getId()).
+                orElseThrow(() -> new CustomException("not found"));
         ingredient = mapper.mapUpdateIngredientRequestDtoToEntity(updateIngredientRequestDto,ingredient);
         ingredient=ingredientRepository.save(ingredient);
         return mapper.mapEntityToUpdateIngredientResponseDto(ingredient,new UpdateIngredientResponseDto());
@@ -42,18 +45,18 @@ public class IngredientServiceImpl implements IngredientService {
 
     @Override
     public void deleteIngredient(Integer id) {
-        Ingredient ingredient=ingredientRepository.findById(id).orElseThrow(() -> new RuntimeException("not found"));
+        Ingredient ingredient=ingredientRepository.findById(id).orElseThrow(() -> new CustomException("not found"));
         if(ingredient.isActive()==true){
             ingredient.setActive(false);
             ingredientRepository.save(ingredient);
         }else {
-            throw new RuntimeException("Branch is not active already");
+            throw new CustomException("Branch is not active already");
         }
     }
 
     @Override
     public CreateIngredientResponseDto findIngredientById(Integer id) {
-        Ingredient ingredient=ingredientRepository.findById(id).orElseThrow(() -> new RuntimeException("not found"));
+        Ingredient ingredient=ingredientRepository.findById(id).orElseThrow(() -> new CustomException("not found"));
         return mapper.mapEntityToCreateIngredientResponsetDto(ingredient);
     }
 
@@ -61,6 +64,7 @@ public class IngredientServiceImpl implements IngredientService {
     public List<CreateIngredientResponseDto> findAllIngredients() {
         List<Ingredient> ingredients=ingredientRepository.findAll();
         return ingredients.stream()
-                .map(ingredient -> mapper.mapEntityToCreateIngredientResponsetDto(ingredient)).collect(Collectors.toList());
+                .map(ingredient -> mapper.
+                        mapEntityToCreateIngredientResponsetDto(ingredient)).collect(Collectors.toList());
     }
 }

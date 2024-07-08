@@ -4,6 +4,7 @@ import com.alas.ms_admin.dto.category.request.CreateCategoryRequestDto;
 import com.alas.ms_admin.dto.category.request.UpdateCategoryRequestDto;
 import com.alas.ms_admin.dto.category.response.CreateCategoryResponseDto;
 import com.alas.ms_admin.dto.category.response.UpdateCategoryResponseDto;
+import com.alas.ms_admin.exeption.CustomException;
 import com.alas.ms_admin.mapper.category.CategoryMapper;
 import com.alas.ms_admin.model.category.Category;
 import com.alas.ms_admin.repository.category.CategoryRepository;
@@ -31,7 +32,7 @@ public class CategoryServiceImpl implements CategoryService {
     @Override
     public UpdateCategoryResponseDto updateCategory(UpdateCategoryRequestDto updateCategoryRequestDto) {
         Category category =categoryRepository.
-                findById(updateCategoryRequestDto.getId()).orElseThrow(() -> new RuntimeException("not found"));
+                findById(updateCategoryRequestDto.getId()).orElseThrow(() -> new CustomException("not found"));
         category = mapper.mapUpdateCategoryRequestDtoToEntity(updateCategoryRequestDto,category);
         category=categoryRepository.save(category);
         return mapper.mapEntityToUpdateCategoryResponseDto(category,new UpdateCategoryResponseDto());
@@ -39,18 +40,18 @@ public class CategoryServiceImpl implements CategoryService {
 
     @Override
     public void deleteCategory(Integer id) {
-        Category category=categoryRepository.findById(id).orElseThrow(() -> new RuntimeException("not found"));
+        Category category=categoryRepository.findById(id).orElseThrow(() -> new CustomException("not found"));
         if(category.isActive()==true){
             category.setActive(false);
             categoryRepository.save(category);
         }else {
-            throw new RuntimeException("Branch is not active already");
+            throw new CustomException("Branch is not active already");
         }
     }
 
     @Override
     public CreateCategoryResponseDto findCategoryById(Integer id) {
-        Category category=categoryRepository.findById(id).orElseThrow(() -> new RuntimeException("not found"));
+        Category category=categoryRepository.findById(id).orElseThrow(() -> new CustomException("not found"));
         return mapper.mapEntityToCreateCategoryResponsetDto(category);
     }
 
