@@ -27,7 +27,7 @@ public class BranchServiceImpl implements BranchService {
         Branch branch = mapper.mapCreateBranchRequestDtoToEntity(createBranchRequestDto);
         Integer restaurantId = createBranchRequestDto.getRestaurantId();
         Restaurant restaurant = restaurantRepository.findById(restaurantId)
-                .orElseThrow(() -> new CustomException("The restaurant it belongs to is not available"));
+                .orElseThrow(() -> new CustomException(" The restaurant it belongs to is not available anymore"));
         branch.setRestaurant(restaurant);
         mapper.mapEntityToCreateBranchResponsetDto(branchRepository.save(branch));
         return restaurant;

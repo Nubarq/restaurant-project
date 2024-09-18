@@ -7,6 +7,7 @@ import com.alas.ms_admin.service.BranchService;
 import lombok.AllArgsConstructor;
 import org.springframework.web.bind.annotation.*;
 
+
 @RestController
 @RequestMapping("/api")
 @AllArgsConstructor
